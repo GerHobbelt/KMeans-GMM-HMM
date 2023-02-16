@@ -161,7 +161,7 @@ double CHMM::Decode(vector<double*>& seq, vector<int>& state)
 	}
 
 	// Recursion
-	for ( t = 1; t < size; t++)  // 对每一个观测，求属于每个状态的当前最大累加概率
+	for ( t = 1; t < size; t++)  // For each observation, find the current maximum cumulative probability belonging to each state.
 	{
 		path[t] = new int[m_stateNum];
 		double* temp = lastLogP;
@@ -234,14 +234,17 @@ void CHMM::Init(const char* sampleFileName)
 	int i,j;
 	int size = 0;
 	int dim = 0;
-	sampleFile.read((char*)&size, sizeof(int));  //读样本数
-	sampleFile.read((char*)&dim, sizeof(int));   //读取特征维数
+	sampleFile.read((char*)&size, sizeof(int));  // read sample count
+	sampleFile.read((char*)&dim, sizeof(int));   // read feature dimension
 	assert(size >= 3);
 	assert(dim == m_stateModel[0]->GetDimNum());
 
-	//这里为从左到右型，第一个状态的初始概率为0.5, 其他状态的初始概率之和为0.5,
-	//每个状态到自身的转移概率为0.5, 到下一个状态的转移概率为0.5.
-	//此处的初始化主要是对混合高斯模型进行初始化
+	// Here is the left-to-right type. 
+	// The initial probability of the first state is 0.5, 
+	// the sum of the initial probabilities of the other states is 0.5, 
+	// the transfer probability of each state to itself is 0.5, and 
+	// the transfer probability of the next state is 0.5.
+	// The initialization here is mainly to initialize the Gaussian mixture model.
 	for ( i = 0; i < m_stateNum; i++)
 	{
 		// The initial probabilities
@@ -261,17 +264,17 @@ void CHMM::Init(const char* sampleFileName)
 	vector<double*> *gaussseq;
 	gaussseq= new vector<double*>[m_stateNum];
 
-	for ( i = 0; i < size; i++)//处理每个样本产生的特征序列
+	for ( i = 0; i < size; i++) // Process the sequence of features produced by each sample
 	{
 		int seq_size = 0;
-		sampleFile.read((char*)&seq_size, sizeof(int));  //序列的长度
+		sampleFile.read((char*)&seq_size, sizeof(int));  // Length of sequence
 
-		double r = float(seq_size)/float(m_stateNum); //每个状态有r个dim维的特征向量
+		double r = float(seq_size)/float(m_stateNum); // Each state has r dim-dimensional feature vectors (eigenvectors)
 		for ( j = 0; j < seq_size; j++)
 		{
 			double* x = new double[dim];
 			sampleFile.read((char*)x, sizeof(double) * dim);
-			//把特征序列平均分配给每个状态
+			// Distribute the characteristic sequence evenly to each state
 			gaussseq[int(j/r)].push_back(x);
 		}
 	}
@@ -286,7 +289,7 @@ void CHMM::Init(const char* sampleFileName)
 		ostrstream str(stateFileName[i], 20);
 		str << "chmm_s" << i << ".tmp" << '\0';
 	}
-	//将每个状态的特征序列保存到文件中，并初始化GMM
+	// Save the feature sequence for each state to a file, and initialize the GMM
 	for ( i = 0; i < m_stateNum; i++)
 	{
 		stateFile[i].open(stateFileName[i], ios_base::binary);
@@ -301,7 +304,7 @@ void CHMM::Init(const char* sampleFileName)
 		}
 		delete x;
 		stateFile[i].close();
-		//使用Kmeans算法初始化状态的每个GMM
+		// Initialize each GMM of the state using the Kmeans algorithm
 		m_stateModel[i]->Train(stateFileName[i]);
 		gaussseq[i].clear();
 	}
@@ -353,7 +356,7 @@ void CHMM::Train(const char* sampleFileName)
 	bool loop = true;
 	double currL = 0;
 	double lastL = 0;
-	int iterNum = 0; //迭代次数
+	int iterNum = 0; // iterations
 	int unchanged = 0;
 	vector<int> state;
 	vector<double*> seq;
@@ -388,7 +391,7 @@ void CHMM::Train(const char* sampleFileName)
 				seq.push_back(x);
 			}
 
-			currL += LogProb(Decode(seq, state)); //Viterbi解码
+			currL += LogProb(Decode(seq, state)); // Viterbi decoding
 
 			stateInitNum[state[0]]++;
 			for ( j = 0; j < seq_size; j++)
@@ -599,9 +602,9 @@ void CHMM::TextTransform(const char* InputText, const char * OutputBinaryText)
 {
 	ifstream Input(InputText);
 	ofstream Output(OutputBinaryText,ios_base::binary);
-	int seq_num = 0;  //总序列长度，int型
-	int dim = 0;      //特征维数，int型
-    int seq_size = 0; //各个序列包含的特征数，int型
+	int seq_num = 0;  // Total sequence length, int type
+	int dim = 0;      // feature dimension, int type
+    int seq_size = 0; // The number of features contained in each sequence, int type
 
 	Input>>seq_num;
 	Input>>dim;
@@ -609,7 +612,7 @@ void CHMM::TextTransform(const char* InputText, const char * OutputBinaryText)
 	Output.write((char*)&dim,sizeof(int));
 
     double *pt_feature;
-	pt_feature = new double[dim];   //别忘了释放内存！！！
+	pt_feature = new double[dim];   // Don't forget to free the memory!
 
 	for(int i = 0; i < seq_num; i++)
 	{
@@ -629,5 +632,5 @@ void CHMM::TextTransform(const char* InputText, const char * OutputBinaryText)
 		}
 	}
 
-    delete []pt_feature;  //勿忘我！！！
+    delete []pt_feature;  // Do not forget me!
 }

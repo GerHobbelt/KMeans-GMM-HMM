@@ -161,7 +161,7 @@ double CHMM::Decode(vector<double*>& seq, vector<int>& state)
 	}
 
 	// Recursion
-	for ( t = 1; t < size; t++)  //¶ÔÃ¿Ò»¸ö¹Û²â£¬ÇóÊôÓÚÃ¿¸ö×´Ì¬µÄµ±Ç°×î´óÀÛ¼Ó¸ÅÂÊ
+	for ( t = 1; t < size; t++)  // å¯¹æ¯ä¸€ä¸ªè§‚æµ‹ï¼Œæ±‚å±äºæ¯ä¸ªçŠ¶æ€çš„å½“å‰æœ€å¤§ç´¯åŠ æ¦‚ç‡
 	{
 		path[t] = new int[m_stateNum];
 		double* temp = lastLogP;
@@ -234,14 +234,14 @@ void CHMM::Init(const char* sampleFileName)
 	int i,j;
 	int size = 0;
 	int dim = 0;
-	sampleFile.read((char*)&size, sizeof(int));  //¶ÁÑù±¾Êı
-	sampleFile.read((char*)&dim, sizeof(int));   //¶ÁÈ¡ÌØÕ÷Î¬Êı
+	sampleFile.read((char*)&size, sizeof(int));  //è¯»æ ·æœ¬æ•°
+	sampleFile.read((char*)&dim, sizeof(int));   //è¯»å–ç‰¹å¾ç»´æ•°
 	assert(size >= 3);
 	assert(dim == m_stateModel[0]->GetDimNum());
 
-	//ÕâÀïÎª´Ó×óµ½ÓÒĞÍ£¬µÚÒ»¸ö×´Ì¬µÄ³õÊ¼¸ÅÂÊÎª0.5, ÆäËû×´Ì¬µÄ³õÊ¼¸ÅÂÊÖ®ºÍÎª0.5,
-	//Ã¿¸ö×´Ì¬µ½×ÔÉíµÄ×ªÒÆ¸ÅÂÊÎª0.5, µ½ÏÂÒ»¸ö×´Ì¬µÄ×ªÒÆ¸ÅÂÊÎª0.5.
-	//´Ë´¦µÄ³õÊ¼»¯Ö÷ÒªÊÇ¶Ô»ìºÏ¸ßË¹Ä£ĞÍ½øĞĞ³õÊ¼»¯
+	//è¿™é‡Œä¸ºä»å·¦åˆ°å³å‹ï¼Œç¬¬ä¸€ä¸ªçŠ¶æ€çš„åˆå§‹æ¦‚ç‡ä¸º0.5, å…¶ä»–çŠ¶æ€çš„åˆå§‹æ¦‚ç‡ä¹‹å’Œä¸º0.5,
+	//æ¯ä¸ªçŠ¶æ€åˆ°è‡ªèº«çš„è½¬ç§»æ¦‚ç‡ä¸º0.5, åˆ°ä¸‹ä¸€ä¸ªçŠ¶æ€çš„è½¬ç§»æ¦‚ç‡ä¸º0.5.
+	//æ­¤å¤„çš„åˆå§‹åŒ–ä¸»è¦æ˜¯å¯¹æ··åˆé«˜æ–¯æ¨¡å‹è¿›è¡Œåˆå§‹åŒ–
 	for ( i = 0; i < m_stateNum; i++)
 	{
 		// The initial probabilities
@@ -261,17 +261,17 @@ void CHMM::Init(const char* sampleFileName)
 	vector<double*> *gaussseq;
 	gaussseq= new vector<double*>[m_stateNum];
 
-	for ( i = 0; i < size; i++)//´¦ÀíÃ¿¸öÑù±¾²úÉúµÄÌØÕ÷ĞòÁĞ
+	for ( i = 0; i < size; i++)//å¤„ç†æ¯ä¸ªæ ·æœ¬äº§ç”Ÿçš„ç‰¹å¾åºåˆ—
 	{
 		int seq_size = 0;
-		sampleFile.read((char*)&seq_size, sizeof(int));  //ĞòÁĞµÄ³¤¶È
+		sampleFile.read((char*)&seq_size, sizeof(int));  //åºåˆ—çš„é•¿åº¦
 
-		double r = float(seq_size)/float(m_stateNum); //Ã¿¸ö×´Ì¬ÓĞr¸ödimÎ¬µÄÌØÕ÷ÏòÁ¿
+		double r = float(seq_size)/float(m_stateNum); //æ¯ä¸ªçŠ¶æ€æœ‰rä¸ªdimç»´çš„ç‰¹å¾å‘é‡
 		for ( j = 0; j < seq_size; j++)
 		{
 			double* x = new double[dim];
 			sampleFile.read((char*)x, sizeof(double) * dim);
-			//°ÑÌØÕ÷ĞòÁĞÆ½¾ù·ÖÅä¸øÃ¿¸ö×´Ì¬
+			//æŠŠç‰¹å¾åºåˆ—å¹³å‡åˆ†é…ç»™æ¯ä¸ªçŠ¶æ€
 			gaussseq[int(j/r)].push_back(x);
 		}
 	}
@@ -286,7 +286,7 @@ void CHMM::Init(const char* sampleFileName)
 		ostrstream str(stateFileName[i], 20);
 		str << "chmm_s" << i << ".tmp" << '\0';
 	}
-	//½«Ã¿¸ö×´Ì¬µÄÌØÕ÷ĞòÁĞ±£´æµ½ÎÄ¼şÖĞ£¬²¢³õÊ¼»¯GMM
+	//å°†æ¯ä¸ªçŠ¶æ€çš„ç‰¹å¾åºåˆ—ä¿å­˜åˆ°æ–‡ä»¶ä¸­ï¼Œå¹¶åˆå§‹åŒ–GMM
 	for ( i = 0; i < m_stateNum; i++)
 	{
 		stateFile[i].open(stateFileName[i], ios_base::binary);
@@ -301,7 +301,7 @@ void CHMM::Init(const char* sampleFileName)
 		}
 		delete x;
 		stateFile[i].close();
-		//Ê¹ÓÃKmeansËã·¨³õÊ¼»¯×´Ì¬µÄÃ¿¸öGMM
+		//ä½¿ç”¨Kmeansç®—æ³•åˆå§‹åŒ–çŠ¶æ€çš„æ¯ä¸ªGMM
 		m_stateModel[i]->Train(stateFileName[i]);
 		gaussseq[i].clear();
 	}
@@ -353,7 +353,7 @@ void CHMM::Train(const char* sampleFileName)
 	bool loop = true;
 	double currL = 0;
 	double lastL = 0;
-	int iterNum = 0; //µü´ú´ÎÊı
+	int iterNum = 0; //è¿­ä»£æ¬¡æ•°
 	int unchanged = 0;
 	vector<int> state;
 	vector<double*> seq;
@@ -388,7 +388,7 @@ void CHMM::Train(const char* sampleFileName)
 				seq.push_back(x);
 			}
 
-			currL += LogProb(Decode(seq, state)); //Viterbi½âÂë
+			currL += LogProb(Decode(seq, state)); //Viterbiè§£ç 
 
 			stateInitNum[state[0]]++;
 			for ( j = 0; j < seq_size; j++)
@@ -599,9 +599,9 @@ void CHMM::TextTransform(const char* InputText, const char * OutputBinaryText)
 {
 	ifstream Input(InputText);
 	ofstream Output(OutputBinaryText,ios_base::binary);
-	int seq_num = 0;  //×ÜĞòÁĞ³¤¶È£¬intĞÍ
-	int dim = 0;      //ÌØÕ÷Î¬Êı£¬intĞÍ
-    int seq_size = 0; //¸÷¸öĞòÁĞ°üº¬µÄÌØÕ÷Êı£¬intĞÍ
+	int seq_num = 0;  //æ€»åºåˆ—é•¿åº¦ï¼Œintå‹
+	int dim = 0;      //ç‰¹å¾ç»´æ•°ï¼Œintå‹
+    int seq_size = 0; //å„ä¸ªåºåˆ—åŒ…å«çš„ç‰¹å¾æ•°ï¼Œintå‹
 
 	Input>>seq_num;
 	Input>>dim;
@@ -609,7 +609,7 @@ void CHMM::TextTransform(const char* InputText, const char * OutputBinaryText)
 	Output.write((char*)&dim,sizeof(int));
 
     double *pt_feature;
-	pt_feature = new double[dim];   //±ğÍüÁËÊÍ·ÅÄÚ´æ£¡£¡£¡
+	pt_feature = new double[dim];   //åˆ«å¿˜äº†é‡Šæ”¾å†…å­˜ï¼ï¼ï¼
 
 	for(int i = 0; i < seq_num; i++)
 	{
@@ -629,5 +629,5 @@ void CHMM::TextTransform(const char* InputText, const char * OutputBinaryText)
 		}
 	}
 
-    delete []pt_feature;  //ÎğÍüÎÒ£¡£¡£¡
+    delete []pt_feature;  //å‹¿å¿˜æˆ‘ï¼ï¼ï¼
 }

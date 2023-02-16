@@ -47,16 +47,16 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& out, CHMM& hmm);
 	friend std::istream& operator>>(std::istream& in, CHMM& hmm);
-    //½«ÌØÕ÷Êı¾İÎÄ±¾ÎÄ¼ş×ª»¯Îª¶ş½øÖÆÎÄ¼ş
+	// å°†ç‰¹å¾æ•°æ®æ–‡æœ¬æ–‡ä»¶è½¬åŒ–ä¸ºäºŒè¿›åˆ¶æ–‡ä»¶
 	void TextTransform(const char* InputText, const char * OutputBinaryText);
 
 private:
-	int m_stateNum;        //×´Ì¬Êı
-	GMM** m_stateModel;    //¸ßË¹»ìºÏÄ£ĞÍ
-	double* m_stateInit;   //×´Ì¬³õÊ¼¸ÅÂÊ
-	double** m_stateTran;  //×´Ì¬×ªÒÆ¸ÅÂÊ
+	int m_stateNum;        // çŠ¶æ€æ•°
+	GMM** m_stateModel;    // é«˜æ–¯æ··åˆæ¨¡å‹
+	double* m_stateInit;   // çŠ¶æ€åˆå§‹æ¦‚ç‡
+	double** m_stateTran;  // çŠ¶æ€è½¬ç§»æ¦‚ç‡
 
-	int m_maxIterNum;      // ×î´óµü´ú´ÎÊı
+	int m_maxIterNum;      // æœ€å¤§è¿­ä»£æ¬¡æ•°
 	double m_endError;
 
 	void Allocate(int state, int dim = 1, int mix = 1);
